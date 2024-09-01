@@ -20,7 +20,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['username'] = user.username
         token['email'] = user.email
         token['bio'] = user.profile.bio
-        token['image'] = user.profile.image
+        token['image'] = str(user.profile.image)
         token['verified'] = user.profile.verified
 
         return token
@@ -38,19 +38,19 @@ class RegisterSerilizer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'username', 'password', 'password2']
 
-        def  validate(self, attrs):
-            if attrs['password'] != attrs['password2']:
-                raise serializers.ValidationError(
-                    {'password': "Password fields does not match"}
-                )
-            return attrs
-
-        def create(self, validate_data):
-            user = User.objects.create(
-                username=validate_data['username'],
-                email=validate_data['email'],
+    def  validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError(
+                {'password': "Password fields does not match"}
             )
-            user.set_password(validate_data['password'])
-            user.save()
+        return attrs
 
-            return user
+    def create(self, validate_data):
+        user = User.objects.create(
+            username=validate_data['username'],
+            email=validate_data['email'],
+        )
+        user.set_password(validate_data['password'])
+        user.save()
+
+        return user
